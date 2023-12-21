@@ -11,7 +11,8 @@ function AffineEncrypt(plainText, a, b) {
   )
     .map((asc) => String.fromCharCode(asc))
     .join("");
+  console.log(cipherText);
   return cipherText;
 }
-
+AffineEncrypt("War", 7, 10);
 export default AffineEncrypt;

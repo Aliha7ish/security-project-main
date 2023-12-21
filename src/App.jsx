@@ -3,6 +3,42 @@ import CeaserEncrypt from "./algorithm/Ceaser";
 import CeaserDecrypt from "./algorithm/CeaserDecrypt";
 import AffineEncrypt from "./algorithm/AffineEncrypt";
 import AffineDecrypt from "./algorithm/AffineDecrypt";
+import RSA from "./algorithm/RSA";
+import RsaEncrypt from "./algorithm/RsaEncrypt";
+import RsaDecrypt from "./algorithm/RsaDecrypt";
+
+const algorithm = [
+  {
+    name: "Ceaser",
+    id: 12354,
+    encFunc(text, k) {
+      return CeaserEncrypt(text, k);
+    },
+    decFun(text, k) {
+      return CeaserDecrypt(text, k);
+    },
+  },
+  {
+    name: "Affine",
+    id: 2147854,
+    encFun(text, a, b) {
+      return AffineEncrypt(text, a, b);
+    },
+    decFun(text, a, b) {
+      return AffineDecrypt(text, a, b);
+    },
+  },
+  {
+    name: "RSA",
+    id: 214789541,
+    encFun(text, p, q, e) {
+      return RsaEncrypt(text, p, q, e);
+    },
+    decFun(text, p, q, e) {
+      return RsaDecrypt(text, p, q, e);
+    },
+  },
+];
 
 function App() {
   return (
@@ -13,57 +49,31 @@ function App() {
 }
 
 const initialState = {
-  cipher: "ceaser",
-  k: 0,
-  input: "",
-  generatedOutput: "",
-  crypto: "encryption",
+  crytoType: "Encryption",
 };
+
 function reducer(state, action) {
   switch (action.type) {
-    case "cryptologyTypeChecked":
+    case "cryptoType":
       return {
         ...state,
-        crypto: action.payLoad,
-      };
-    case "cipherSelected":
-      return {
-        ...state,
-        cipher: action.payLoad,
-      };
-    case "ciphering":
-      return {
-        ...state,
-        input: action.payLoad,
-      };
-    case "keyEntered":
-      return {
-        ...state,
-        k: action.payLoad,
-      };
-    case "generateOutput":
-      return {
-        ...state,
-        generatedOutput:
-          state.crypto === "encryption"
-            ? CeaserEncrypt(state.input, state.k)
-            : CeaserDecrypt(state.input, state.k),
+        cryptoType: action.payLoad,
       };
   }
 }
 
 function Form() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { cipher, k, input, generatedOutput, crypto } = state;
+  const { cryptoType } = state;
   return (
     <form>
       <div className="form-group">
         <select
           className="form-control"
           id="exampleFormControlSelect1"
-          value={crypto}
+          value={cryptoType}
           onChange={(e) =>
-            dispatch({ type: "cryptologyTypeChecked", payLoad: e.target.value })
+            dispatch({ type: "cryptoType", payLoad: e.target.value })
           }
         >
           <option value="encryption">Encryption</option>
@@ -72,43 +82,34 @@ function Form() {
       </div>
       <div className="form-group">
         <label htmlFor="exampleFormControlSelect1"></label>
-        <select
-          className="form-control"
-          id="exampleFormControlSelect1"
-          onChange={(e) =>
-            dispatch({ type: "cipherSelected", payLoad: e.target.value })
-          }
-        >
-          <option value="ceaser">Ceaser</option>
-          <option value="viginere">Viginere</option>
-          <option value="auto key">Auto Key</option>
-          <option value="rsa">RSA</option>
-          <option value="hill">Hill Cipher</option>
-          <option value="affine">Affine</option>
+        <select className="form-control" id="exampleFormControlSelect1">
+          {algorithm.map((algo) => {
+            return (
+              <option value={algo.name} key={algo.id}>
+                {algo.name}
+              </option>
+            );
+          })}
         </select>
       </div>
       <div className="text-container">
         <div className="form-group">
-          <label htmlFor="exampleFormControlTextarea1">{crypto}</label>
+          <label htmlFor="exampleFormControlTextarea1"></label>
           <textarea
             className="form-control"
             id="exampleFormControlTextarea1"
             rows="3"
-            value={input}
             onChange={(e) =>
               dispatch({ type: "ciphering", payLoad: e.target.value })
             }
           ></textarea>
         </div>
         <div className="form-group">
-          <label htmlFor="exampleFormControlTextarea1">
-            {crypto === "encryption" ? "Decrypted Result" : "Encrypted Result"}
-          </label>
+          <label htmlFor="exampleFormControlTextarea1"></label>
           <textarea
             className="form-control"
             id="exampleFormControlTextarea2"
             rows="3"
-            value={generatedOutput}
             readOnly
           ></textarea>
         </div>
@@ -118,7 +119,6 @@ function Form() {
         <input
           type="text"
           className="form-control"
-          value={k}
           onChange={(e) =>
             dispatch({ type: "keyEntered", payLoad: +e.target.value })
           }
@@ -137,23 +137,5 @@ function Form() {
     </form>
   );
 }
-// function Hill() {
-//   return (
-//     <select
-//       className="form-control"
-//       id="exampleFormControlSelect1"
-//       onClick={(e) =>
-//         dispatch({ type: "cipherSelected", payLoad: e.target.value })
-//       }
-//     >
-//       <option value="ceaser">Ceaser</option>
-//       <option value="viginere">Viginere</option>
-//       <option value="auto key">Auto Key</option>
-//       <option value="rsa">RSA</option>
-//       <option value="hill">Hill Cipher</option>
-//       <option value="affine">Affine</option>
-//     </select>
-//   );
-// }
 
 export default App;
